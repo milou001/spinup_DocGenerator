@@ -33,9 +33,9 @@ def test_parser(pdf_path: str):
         return False
 
 if __name__ == "__main__":
-    data_dir = Path(__file__).parent.parent / "data"
+    data_dir = Path(__file__).parent.parent / "data" / "samples"
     
-    # Find all PDFs in data dir
+    # Find all PDFs in data/samples dir
     pdfs = list(data_dir.glob("*.pdf"))
     
     if not pdfs:

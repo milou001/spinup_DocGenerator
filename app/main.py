@@ -47,12 +47,22 @@ async def health_check():
 
 @app.get("/api/status")
 async def status():
-    """Get database and ingestion status."""
+    """Get database, ingestion and embedding status."""
     try:
         pipeline = PDFIngestionPipeline()
-        status = pipeline.get_ingestion_status()
+        db_status = pipeline.get_ingestion_status()
         pipeline.close()
-        return {"status": "ok", "database": status}
+        
+        return {
+            "status": "ok",
+            "database": db_status,
+            "embedding_status": {
+                "total_chunks": db_status["total_chunks"],
+                "embedded": db_status["embedded_chunks"],
+                "pending": db_status["pending_embeddings"],
+                "percentage_complete": round(100 * db_status["embedded_chunks"] / max(1, db_status["total_chunks"]), 1)
+            }
+        }
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -123,15 +133,32 @@ async def search(request: SearchRequest):
         request: SearchRequest with query, top_n, optional year_filter
     
     Returns:
-        List of matching documents with similarity scores
+        List of matching chunks with similarity scores
     """
-    # TODO: Implement embedding search
-    return {
-        "status": "not_implemented",
-        "query": request.query,
-        "top_n": request.top_n,
-        "results": []
-    }
+    from app.embedding import EmbeddingService
+    
+    try:
+        service = EmbeddingService()
+        results = service.similarity_search(
+            query=request.query,
+            top_k=request.top_n,
+            year_filter=request.year_filter
+        )
+        service.close()
+        
+        return {
+            "status": "success",
+            "query": request.query,
+            "results_count": len(results),
+            "results": results
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e),
+            "query": request.query,
+            "results": []
+        }
 
 
 @app.post("/api/generate")
