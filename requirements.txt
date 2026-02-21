@@ -1,0 +1,13 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+sqlite3  # built-in
+json1    # extension (install separately)
+pydantic-settings==2.1.0
+numpy==1.24.3
+requests==2.31.0
+reportlab==4.0.7
+pypdf==3.17.1
+pdfplumber==0.10.3
+ollama==0.1.1
+python-multipart==0.0.6
