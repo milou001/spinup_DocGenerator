@@ -164,20 +164,82 @@ async def search(request: SearchRequest):
 @app.post("/api/generate")
 async def generate(request: GenerateRequest):
     """
-    Task 2: Generate new report from search results.
+    Task 2: Generate new report from search results + LLM synthesis.
     
     Args:
         request: GenerateRequest with brief and parameters
     
     Returns:
-        Generated report (PDF or JSON)
+        Generated report metadata + PDF path
     """
-    # TODO: Implement document generation
-    return {
-        "status": "not_implemented",
-        "brief": request.brief,
-        "search_results": request.search_results
-    }
+    from app.embedding import EmbeddingService
+    from app.generator import DocumentGenerator
+    from app.pdf_generator import PDFGenerator
+    
+    try:
+        # Step 1: Search for relevant documents
+        search_service = EmbeddingService()
+        search_results = search_service.similarity_search(
+            query=request.brief,
+            top_k=request.search_results
+        )
+        search_service.close()
+        
+        if not search_results:
+            return {
+                "status": "error",
+                "message": f"No relevant documents found for brief: {request.brief}"
+            }
+        
+        # Step 2: Generate report via LLM
+        generator = DocumentGenerator()
+        gen_result = generator.generate_report(
+            brief=request.brief,
+            search_results=search_results,
+            num_results=request.search_results
+        )
+        
+        if gen_result['status'] != 'success':
+            return gen_result
+        
+        # Step 3: Create PDF
+        if request.output_format == "pdf":
+            pdf_gen = PDFGenerator()
+            pdf_path = pdf_gen.generate_pdf(
+                title=gen_result['report_title'],
+                content=gen_result['report_content'],
+                source_docs=gen_result['source_documents']
+            )
+            
+            return {
+                "status": "success",
+                "brief": request.brief,
+                "report_title": gen_result['report_title'],
+                "pdf_path": pdf_path,
+                "output_format": "pdf",
+                "source_documents": gen_result['source_documents'],
+                "num_sources": gen_result['num_sources'],
+                "timestamp": gen_result['generation_timestamp']
+            }
+        else:
+            # Return JSON
+            return {
+                "status": "success",
+                "brief": request.brief,
+                "report_title": gen_result['report_title'],
+                "report_content": gen_result['report_content'],
+                "output_format": "json",
+                "source_documents": gen_result['source_documents'],
+                "num_sources": gen_result['num_sources'],
+                "timestamp": gen_result['generation_timestamp']
+            }
+    
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e),
+            "brief": request.brief
+        }
 
 
 if __name__ == "__main__":
