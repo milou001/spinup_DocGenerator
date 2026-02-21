@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from pathlib import Path
 import tempfile
@@ -29,6 +30,17 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
+# Serve frontend HTML
+frontend_html = Path(__file__).parent.parent / "frontend" / "index.html"
+
+@app.get("/")
+async def root():
+    """Serve frontend HTML"""
+    if frontend_html.exists():
+        with open(frontend_html, "r") as f:
+            return HTMLResponse(f.read())
+    return {"error": "Frontend not found"}
 
 
 class SearchRequest(BaseModel):
@@ -198,7 +210,7 @@ async def generate(request: GenerateRequest):
             }
         
         # Step 2: Generate report via LLM
-        generator = DocumentGenerator()
+        generator = DocumentGenerator(model="orca-mini")
         gen_result = generator.generate_report(
             brief=request.brief,
             search_results=search_results,

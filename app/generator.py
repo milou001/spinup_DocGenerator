@@ -11,7 +11,7 @@ from app.embedding import EmbeddingService
 class DocumentGenerator:
     """Generate new reports from search results using Ollama LLM."""
     
-    def __init__(self, ollama_url: str = "http://openclaw-8ola-ollama-1:11434", model: str = "mistral"):
+    def __init__(self, ollama_url: str = "http://openclaw-8ola-ollama-1:11434", model: str = "orca-mini"):
         """
         Initialize document generator.
         
@@ -93,7 +93,7 @@ Report {i}: {result['report_id']} - {result['heading']}
 Source: Pages {result['page_range']}
 Confidence: {result['similarity_score']:.2%}
 
-{result['text'][:400]}
+{result['text'][:200]}
 ---
 """)
         
@@ -110,29 +110,17 @@ Confidence: {result['similarity_score']:.2%}
         Returns:
             Full prompt for LLM
         """
-        return f"""Du bist ein technischer Report-Generator für Deutsche Bahn Fahrzeugsysteme.
+        return f"""Technischer Report-Generator. Schreibe einen kurzen technischen Bericht.
 
-Basierend auf den folgenden Kontext-Auszügen aus bestehenden technischen Berichten, 
-erstelle einen neuen, zusammenhängenden technischen Bericht, der die Anforderungen erfüllt:
+Thema: {brief}
 
-ANFORDERUNG DES NUTZERS:
-{brief}
-
-KONTEXT AUS BESTEHENDEN BERICHTEN:
+Kontext:
 {context}
 
-ANWEISUNGEN:
-1. Schreibe einen professionellen technischen Bericht (Deutsche Bahn Stil)
-2. Nutze relevante Informationen aus den Kontext-Auszügen
-3. Strukturiere den Bericht mit: Einleitung, Beschreibung, Analyse, Ergebnis
-4. Verwende technische Fachsprache
-5. Zitiere wo möglich die Quelldokumente
-6. Länge: ca. 1-2 Seiten (500-1000 Worte)
-
-NEUER BERICHT:
+Schreibe einen kurzen Bericht (max 300 Worte) mit: Einleitung, Analyse, Ergebnis.
 """
     
-    def _call_ollama(self, prompt: str, max_tokens: int = 1000) -> str:
+    def _call_ollama(self, prompt: str, max_tokens: int = 300) -> str:
         """
         Call Ollama LLM to generate text.
         
