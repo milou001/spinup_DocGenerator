@@ -132,7 +132,7 @@ ANWEISUNGEN:
 NEUER BERICHT:
 """
     
-    def _call_ollama(self, prompt: str, max_tokens: int = 2000) -> str:
+    def _call_ollama(self, prompt: str, max_tokens: int = 1000) -> str:
         """
         Call Ollama LLM to generate text.
         
@@ -150,11 +150,11 @@ NEUER BERICHT:
                     "model": self.model,
                     "prompt": prompt,
                     "stream": False,
-                    "temperature": 0.7,
-                    "top_p": 0.9,
+                    "temperature": 0.5,  # Lower for more consistent output
+                    "top_p": 0.8,
                     "num_predict": max_tokens
                 },
-                timeout=120
+                timeout=300  # Longer timeout for large models
             )
             response.raise_for_status()
             data = response.json()

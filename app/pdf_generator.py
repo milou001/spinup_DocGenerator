@@ -8,6 +8,7 @@ from reportlab.lib import colors
 from datetime import datetime
 from pathlib import Path
 import tempfile
+import time
 
 
 class PDFGenerator:
@@ -61,12 +62,12 @@ class PDFGenerator:
             Path to generated PDF
         """
         if not output_path:
-            # Create temp file
-            fd, output_path = tempfile.mkstemp(suffix=".pdf", prefix="report_")
+            # Create temp file in workspace data dir
+            output_path = f"/data/.openclaw/workspace/coding/spinup_DocGenerator/data/generated_report_{int(time.time())}.pdf"
         
         # Create PDF document
         doc = SimpleDocTemplate(
-            output_path,
+            str(output_path),
             pagesize=A4,
             rightMargin=1.5*cm,
             leftMargin=1.5*cm,
@@ -117,12 +118,12 @@ class PDFGenerator:
             
             # Source table
             source_data = [['Report ID', 'Heading', 'Pages', 'Ähnlichkeit']]
-            for doc in source_docs:
+            for source_doc in source_docs:
                 source_data.append([
-                    doc.get('report_id', ''),
-                    doc.get('heading', '')[:30],
-                    doc.get('page_range', ''),
-                    f"{doc.get('similarity', 0):.1%}"
+                    source_doc.get('report_id', ''),
+                    source_doc.get('heading', '')[:30],
+                    source_doc.get('page_range', ''),
+                    f"{source_doc.get('similarity', 0):.1%}"
                 ])
             
             source_table = Table(source_data)
