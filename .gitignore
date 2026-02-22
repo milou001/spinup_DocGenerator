@@ -35,3 +35,6 @@ data/archive/*
 !data/.gitkeep
 .vscode/
 *.log
+
+# generated backups
+/data/samples_backup_*
