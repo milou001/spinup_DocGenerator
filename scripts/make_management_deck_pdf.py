@@ -190,29 +190,53 @@ def slide_what(c):
 
 def slide_arch(c):
     section_header(c, "Architektur (management-tauglich)", "lokal betreibbar • skalierbar")
-    card(c, 72, 140, 1136, 470, "Datenfluss")
+    card(c, 72, 140, 1136, 470, "Datenfluss (vereinfacht)")
 
     # boxes
-    bx_y = 420
-    bx_w = 210
-    gap = 60
+    bx_y = 430
+    bx_w = 190
+    gap = 46
     xs = [120, 120 + bx_w + gap, 120 + 2 * (bx_w + gap), 120 + 3 * (bx_w + gap), 120 + 4 * (bx_w + gap)]
-    labels = ["PDFs", "Parser/Chunks", "DB", "Embeddings", "UI/API"]
+    labels = ["Originale\n(PDF)", "DSGVO-Gate\n(Anonymisierung)", "Parser\nChunks", "Datenbank\n(Text+Meta)", "Embeddings\n(Vektoren)"]
+
     for x, lab in zip(xs, labels):
         c.setFillColor(white)
-        c.roundRect(x, bx_y, bx_w, 80, 14, stroke=0, fill=1)
+        c.roundRect(x, bx_y, bx_w, 90, 14, stroke=0, fill=1)
         c.setFillColor(TEXT)
-        c.setFont("Helvetica-Bold", 14)
-        tw = c.stringWidth(lab, "Helvetica-Bold", 14)
-        c.drawString(x + (bx_w - tw) / 2, bx_y + 30, lab)
+        c.setFont("Helvetica-Bold", 12)
+        lines = lab.split("\n")
+        for i, line in enumerate(lines):
+            tw = c.stringWidth(line, "Helvetica-Bold", 12)
+            c.drawString(x + (bx_w - tw) / 2, bx_y + 56 - i * 16, line)
 
     for i in range(len(xs) - 1):
-        arrow(c, xs[i] + bx_w, bx_y + 40, xs[i + 1], bx_y + 40)
+        arrow(c, xs[i] + bx_w, bx_y + 45, xs[i + 1], bx_y + 45)
+
+    # outputs box
+    out_x = 980
+    out_y = 260
+    out_w = 200
+    out_h = 140
+    c.setFillColor(white)
+    c.roundRect(out_x, out_y, out_w, out_h, 14, stroke=0, fill=1)
+    c.setFillColor(TEXT)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(out_x + 16, out_y + out_h - 30, "Nutzer")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(MUTED)
+    c.drawString(out_x + 16, out_y + out_h - 52, "Web-UI / API")
+    c.drawString(out_x + 16, out_y + out_h - 70, "Suche + Entwurf")
+    c.drawString(out_x + 16, out_y + out_h - 88, "Quellen klickbar")
+
+    # arrows from DB/Embeddings to user
+    arrow(c, xs[3] + bx_w / 2, bx_y, out_x + 10, out_y + out_h - 40)
+    arrow(c, xs[4] + bx_w / 2, bx_y, out_x + 10, out_y + out_h - 70)
 
     # note
     c.setFillColor(MUTED)
-    c.setFont("Helvetica", 14)
-    c.drawString(120, 310, "Erklärung: Wir machen Dokumenttext maschinen-suchbar und geben Treffer + Quellen zurück.")
+    c.setFont("Helvetica", 12)
+    c.drawString(120, 340, "Erklärung: Originale bleiben intern. Vor Verarbeitung werden personenbezogene Daten entfernt.")
+    c.drawString(120, 320, "Chunks + Quellen dienen der Nachvollziehbarkeit; Vektoren (Embeddings) ermöglichen semantische Suche.")
 
 
 def slide_hallucinations(c):
@@ -254,15 +278,16 @@ def slide_governance(c):
 
 def slide_local(c):
     section_header(c, "Betrieb & Datenschutz", "lokal / im eigenen Rechenzentrum")
-    card(c, 72, 140, 1136, 470, "Kontrollierter Betrieb")
+    card(c, 72, 140, 1136, 470, "Schutz vor Verlust & Fremdzugriff")
     bullets(
         c,
         100,
         560,
         [
-            "Kein externer SaaS-Zwang: Betrieb im eigenen Netzwerk möglich",
-            "Modelle lokal oder intern (DB) betreibbar",
-            "Mit größeren internen Modellen steigt Qualität – Architektur bleibt gleich",
+            "Dokumente verbleiben intern (keine externe Plattform notwendig)",
+            "Nachvollziehbarkeit: Chunks speichern Quelle (Dokument/Seite) und werden archiviert",
+            "Schutz: Datenbank + Embeddings regelmäßig sichern (Backup/Archiv)",
+            "Schutz vor Fremdzugriff: Zugriffskontrollen; optional Verschlüsselung im Ruhezustand",
         ],
         size=16,
     )
@@ -294,14 +319,14 @@ def slide_benefits(c):
 
 
 def slide_roadmap(c):
-    section_header(c, "Roadmap", "Phase 1: 4 Wochen • Testgruppe: 10 Nutzer")
-    card(c, 72, 140, 1136, 470, "Phasen + Gates")
+    section_header(c, "Roadmap", "Migration zuerst • dann Test + Feldversuch")
+    card(c, 72, 140, 1136, 470, "Phasen + Freigabe-Punkte")
 
     phases = [
-        ("Phase 1", "Qualität prüfen\n~400 Dateien\n4 Wochen", "Gate: Freigabe"),
-        ("Phase 2", "On-Prem Migration\n(DB Hardware)", "Gate: KPI Review"),
-        ("Phase 3", "Feldversuch\n10 Nutzer", "Gate: Go/No-Go"),
-        ("Phase 4", "Rollout\nNachbarabteilungen", "")
+        ("Schritt 1", "Portierung auf\nDB Hardware\n(im eigenen RZ)", "Gate: IT/Security"),
+        ("Schritt 2", "Test mit Original-\nDokumenten\n1 Woche", "Gate: Datenschutz"),
+        ("Schritt 3", "Feldversuch\n10 Nutzer\n4 Wochen", "Gate: Review"),
+        ("Schritt 4", "Rollout\nNachbarabteilungen", "")
     ]
 
     x0 = 120
@@ -345,16 +370,16 @@ def slide_gate(c):
 
 
 def slide_migration(c):
-    section_header(c, "Migration: Hostinger → DB Hardware", "Einschätzung")
+    section_header(c, "Portierung: Hostinger → DB Hardware", "Einschätzung")
     card(c, 72, 140, 1136, 470, "Durchführbarkeit: hoch")
     bullets(
         c,
         100,
         560,
         [
-            "Container-/Service-Design ist On-Prem-tauglich",
-            "Zeitaufwändig typischerweise: Security/Compliance, Netzwerk/TLS, Rechte, Modellbetrieb",
-            "Empfehlung: IT/Security früh einbinden, klare Betriebsprozesse",
+            "Container-/Service-Design ist für Betrieb im eigenen Rechenzentrum geeignet",
+            "Zeitaufwändig typischerweise: Security/Compliance, Netzwerk/TLS, Berechtigungen, Modellbetrieb",
+            "Empfehlung: IT/Security früh einbinden, klare Betriebsprozesse (Backup/Restore, Updates)",
         ],
         size=16,
     )
