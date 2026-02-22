@@ -110,14 +110,23 @@ Confidence: {result['similarity_score']:.2%}
         Returns:
             Full prompt for LLM
         """
-        return f"""Technischer Report-Generator. Schreibe einen kurzen technischen Bericht.
+        return f"""Du bist ein technischer Report-Generator.
+
+WICHTIG:
+- Antworte vollständig auf **Deutsch**.
+- Keine Entschuldigungen, keine Hinweise auf Modell-Limits.
+- Wenn Informationen fehlen: mache Annahmen explizit als "Annahme:".
 
 Thema: {brief}
 
-Kontext:
+Kontext (Auszüge aus den gefundenen Dokumenten):
 {context}
 
-Schreibe einen kurzen Bericht (max 300 Worte) mit: Einleitung, Analyse, Ergebnis.
+Aufgabe:
+Schreibe einen kurzen Bericht (max. 300 Wörter) mit den Überschriften:
+1) Einleitung
+2) Analyse
+3) Ergebnis
 """
     
     def _call_ollama(self, prompt: str, max_tokens: int = 300) -> str:
