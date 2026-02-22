@@ -59,7 +59,13 @@
     </div>
 
     <script>
-        const API = '/api';
+        // API base:
+        // - If frontend is served from a different port (e.g. :8081 via python http.server),
+        //   we must call the API on :8000 explicitly.
+        // - If frontend is served by the API server itself, relative '/api' works.
+        const API = (location.port && location.port !== '8000')
+            ? (location.protocol + '//' + location.hostname + ':8000/api')
+            : '/api';
 
         // Load status
         async function loadStatus() {
