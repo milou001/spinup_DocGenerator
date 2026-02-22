@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NihongoLB – Daily</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f7f8fc;color:#0f172a;margin:0}
+    header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:28px 20px}
+    .wrap{max-width:980px;margin:0 auto;padding:20px}
+    .card{background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.08);padding:18px 18px;margin-top:16px}
+    h1{margin:0;font-size:22px}
+    p{margin:10px 0;line-height:1.4;color:#334155}
+    a{color:#4f63d7;text-decoration:none}
+    a:hover{text-decoration:underline}
+    code{background:#eef2ff;padding:2px 6px;border-radius:6px}
+    .muted{color:#64748b;font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>NihongoLB – Daily Mini‑Lerneinheit</h1>
+      <div class="muted">Automatisch generiert (geplant: täglich 02:00 Europe/Berlin)</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="card">
+      <h2 style="margin:0 0 8px 0;font-size:18px;">Status</h2>
+      <p>Landingpage ist vorbereitet. Cronjob + Inhalte (Kapitel 6/7, Verben etc.) folgen als nächster Schritt.</p>
+      <p class="muted">Hinweis: Diese Seite wird aktuell über den simplen Frontend‑Webserver ausgeliefert (python http.server).</p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 8px 0;font-size:18px;">Nächste Inhalte</h2>
+      <ul style="margin:0;padding-left:18px;color:#334155;">
+        <li>Kapitel 6 (Seiten 19–24): Richtungen/Vokabeln + Beispielsätze + Audio</li>
+        <li>Verben (ab Seite 71): alle Formen inkl. て‑Form + Audio je Form</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 8px 0;font-size:18px;">Link</h2>
+      <p>Wenn dein Frontend‑Tunnel läuft, öffne:</p>
+      <p><a href="/daily/">/daily/</a> (diese Seite)</p>
+      <p class="muted">Typisch: <code>http://localhost:8081/daily/</code></p>
+    </div>
+  </main>
+</body>
+</html>
