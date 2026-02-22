@@ -1,6 +1,11 @@
-"""Embedding generation and vector similarity search via Ollama."""
+"""Embedding generation and vector similarity search via Ollama.
 
-import numpy as np
+Note: We intentionally avoid NumPy here to prevent platform-specific binary issues
+(e.g., segfaults on some Python/container combinations). Similarity is computed
+with a small pure-Python implementation.
+"""
+
+import math
 import requests
 import json
 from typing import List, Dict
@@ -170,13 +175,24 @@ class EmbeddingService:
 
 
 def cosine_similarity(a: List[float], b: List[float]) -> float:
-    """Compute cosine similarity between two vectors."""
-    a = np.array(a)
-    b = np.array(b)
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
-    
-    if norm_a == 0 or norm_b == 0:
+    """Compute cosine similarity between two vectors (pure Python)."""
+    if not a or not b:
         return 0.0
-    
-    return float(np.dot(a, b) / (norm_a * norm_b))
+    if len(a) != len(b):
+        # Defensive: different model dims
+        n = min(len(a), len(b))
+        a = a[:n]
+        b = b[:n]
+
+    dot = 0.0
+    na = 0.0
+    nb = 0.0
+    for x, y in zip(a, b):
+        dot += x * y
+        na += x * x
+        nb += y * y
+
+    if na == 0.0 or nb == 0.0:
+        return 0.0
+
+    return float(dot / (math.sqrt(na) * math.sqrt(nb)))
